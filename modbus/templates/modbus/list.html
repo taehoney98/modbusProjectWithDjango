@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <title> 값 관찰</title>
+    </head>
+    <body>
+    <h1>  Digital coils value </h1>
+        
+    {% if coils %}
+        <ol>
+            {% for  index, boolean_value  in coils.items%}
+            <p>
+                <li>
+                    value  is {{boolean_value}} 
+                </li>
+                <button type="button" onclick="location.href='coil/{{index}}';">  변경 </button>
+            </p>
+            {%endfor%}
+        </ol>
+    {%else %}
+        <p>내용이 없습니다.</p>
+    {%endif%}
+    
+    <h1> Analog registers value </h1>
+    
+    {% if registers %}
+        <ol>
+            {%for register_index , register_value in registers.items%}
+                <li>
+                <form action= "register/{{register_index}}/{{register_value}}" oninput="result.value=parseInt(number.value)" autocomplete = "off" method="post">
+                    {% csrf_token %}
+                입력 : <input type="number"  name="number" min="0" max="32767"> 
+                <input type= "submit" value="변경"> 
+                
+                <p>value is <output name="result" for="num">  {{register_value}}</output>  </p>
+                </form>
+                </li>
+            {%endfor%}
+        </ol>
+    {%else %}
+        <p>내용이 없습니다.</p>
+    {%endif%}
+    
+
+    <h1>  READ ONLY digital inputs value (default= False)</h1>
+
+        {% if discrete_inputs %}
+        <ol>
+            {%for  boolean_value in discrete_inputs%}
+            <p>
+                <li>value is {{boolean_value}}
+            </p>
+                </li>
+            {%endfor%}
+        </ol>
+    {%else %}
+        <p>내용이 없습니다.</p>
+    {%endif%}
+    
+    <h1> READ ONLY analog inputs value (default = 0)</h1>
+    
+    {% if input_register %}
+        <ol>
+            {%for analog_value in input_register%}
+                <li>
+                <p>value is {{analog_value}} </p> 
+                </li>
+            {%endfor%}
+        </ol>
+    {%else %}
+        <p>내용이 없습니다.</p>
+    {%endif%}
+    </body>
+</html>

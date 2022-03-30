@@ -1,0 +1,3 @@
+[submodule "EasyModbusTCP.PY"]
+	path = EasyModbusTCP.PY
+	url = https://github.com/rossmann-engineering/EasyModbusTCP.PY
