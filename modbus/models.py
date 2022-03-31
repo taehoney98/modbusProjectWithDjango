@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 from django.db import models
 from EasyModbusPy.easymodbus.modbusClient import *
 
@@ -9,11 +8,9 @@ class Digital (models.Model):
     def __str__(self):
         return str(self.coil_value)
     
-    
 class Analog (models.Model):
     register_value =models.IntegerField(default=0)
 
     def __str__(self):
         return str(self.register_value)
-    
     

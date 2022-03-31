@@ -1,18 +1,15 @@
-
 from django.shortcuts import  render
-from .models import *
 from modbus.models import Digital
 from modbus.models import Analog
 from EasyModbusPy.easymodbus.modbusClient import *
-from EasyModbusPy.easymodbus import modbusClient
-
 # Create your views here.
 
 modbus_client=ModbusClient('192.168.0.60',502)
-modbusClient.parity = Parity.even
-modbusClient.unitidentifier = 2
-modbusClient.baudrate = 9600
-modbusClient.stopbits = Stopbits.one
+modbus_client.parity = Parity.even #짝수 패리티
+modbus_client.unitidentifier = 1
+modbus_client.baudrate = 9600  #전송속도 보오 레이트
+modbus_client.stopbits = Stopbits.one #정지 비트  데이터 송출 종료 알림
+
 modbus_client.connect()
 
 Digital.objects.all().delete()
