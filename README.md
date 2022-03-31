@@ -6,7 +6,7 @@ Django를 활용한 modbusTCP 실습
 ```python
 modbus_client=ModbusClient('192.168.0.60',502)
 modbus_client.parity = Parity.even #짝수 패리티
-modbus_client.unitidentifier = 1 #
+modbus_client.unitidentifier = 1 # 서버주소 전달
 modbus_client.baudrate = 9600  #전송속도 보오 레이트
 modbus_client.stopbits = Stopbits.one #정지 비트  데이터 송출 종료 알림
 
