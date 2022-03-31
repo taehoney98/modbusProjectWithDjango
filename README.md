@@ -1,0 +1,114 @@
+# modbusProjectWithDjango
+Django를 활용한 modbusTCP 실습
+
+
+## views.py
+### index 합수
+```python
+
+def index(request):
+    
+    coils = modbus_client.read_coils(0, 10)
+    indexCoils = dict(enumerate(coils))
+
+    holding_registers=modbus_client.read_holdingregisters(0,10)
+    indexRegisters =dict(enumerate(holding_registers))
+    
+    discrete_inputs = modbus_client.read_discreteinputs(0, 10)	
+    input_registers = modbus_client.read_inputregisters(0, 10)  
+
+    context={'coils': indexCoils ,'registers': indexRegisters,'discrete_inputs': discrete_inputs,'input_register': input_registers }
+    return render(request,'modbus/list.html',context)
+```
+초기페이지에서  coil, holdingregister, discrete_inputs, input_registers 값을 읽어 modbus/list.html로 전달한다.
+
+### writeCoil 함수
+``` python
+
+def writeCoil(request,index):
+    
+    coils[index] = not coils[index]
+    modbus_client.write_single_coil(index, coils[index])
+    
+    if coils[index] == False:
+        item =Digital.objects.get(id=index)
+        item.coil_value = False
+        item.save()
+    else:
+        item= Digital.objects.get(id=index)
+        item.coil_value = True
+        item.save()
+        
+    print(Digital.objects.values_list('id','coil_value'))
+    
+    context={'changedcoil': coils}
+    return render(request, 'modbus/coils.html',context)
+```
+현재의 coil 값에 not을 붙여 write_single_coil을 통해 변경한 후, Digital Model 의 해당 index 값을 coils[index]값으로 변경한다.
+
+
+
+
+### writeRegister 함수
+```  python
+
+def writeRegister(request, register_index, register_value):
+    
+    if request.method == 'POST':
+        register_value=request.POST.get('number')    
+        modbus_client.write_single_register(register_index,  int(register_value))
+        
+        item= Analog.objects.get(id=register_index)
+        item.register_value = int(register_value)
+        item.save()
+    else:
+        print("method is get")
+    
+    print(Analog.objects.values_list('id','register_value'))
+    
+    context= {'register_index': register_index, 'register_value': register_value }
+    
+    return render(request,'modbus/register.html', context)
+
+```
+list.html에서 전달받은 방식이 POST면, number에 해당하는 값을 register_value에 저장하고 write_single_register를 통해 변경한다.
+Analog Model의 해당 index 값을 register_value로 변경한다.
+## urls.py 
+
+```python 
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('',views.index , name='index'),    
+    path('coil/<int:index>/',views.writeCoil,name='writeCoil'),
+    path('register/<int:register_index>/<int:register_value>', views.writeRegister, name='writeRegister'),
+    
+]
+
+```
+url.py의 path에서 해당하는 view.py 의 해당하는 함수 명으로 이동한다.
+
+
+## models.py
+
+```python
+from django.db import models
+from EasyModbusPy.easymodbus.modbusClient import *
+
+# Create your models here.
+class Digital (models.Model):
+    coil_value =models.BooleanField(default=False)
+    
+    def __str__(self):
+        return str(self.coil_value)
+    
+    
+class Analog (models.Model):
+    register_value =models.IntegerField(default=0)
+
+    def __str__(self):
+        return str(self.register_value)
+    
+```
+boolean 값의 coil_value를 갖는 Digital 클래스와 integer 값의 register_value를 갖는 Analog 클래스가 존재한다. 
