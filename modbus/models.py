@@ -1,5 +1,4 @@
 from django.db import models
-from EasyModbusPy.easymodbus.modbusClient import *
 
 # Create your models here.
 class Digital (models.Model):
