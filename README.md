@@ -2,6 +2,32 @@
 Django를 활용한 modbusTCP 실습
 
 
+## ModbusClient 연결 설정
+```python
+modbus_client=ModbusClient('192.168.0.60',502)
+modbus_client.parity = Parity.even #짝수 패리티
+modbus_client.unitidentifier = 1 # 서버주소 전달
+modbus_client.baudrate = 9600  #전송속도 보오 레이트
+modbus_client.stopbits = Stopbits.one #정지 비트  데이터 송출 종료 알림
+
+modbus_client.connect()
+
+Digital.objects.all().delete()
+Analog.objects.all().delete()
+
+coils = modbus_client.read_coils(0, 10)
+for i in range(len(coils)):
+    Digital.objects.create(id=i,coil_value=coils[i])
+
+holding_registers=modbus_client.read_holdingregisters(0,10)
+for i in range (len(holding_registers)):
+    Analog.objects.create(id=i,register_value=holding_registers[i])
+
+print(Analog.objects.values_list('id','register_value'))
+print(Digital.objects.values_list('id','coil_value'))    
+
+```
+웹 페이지 작동시 해당 IP,Port번호로 설정 후 connect한 후, 초기 coils 값과 holding_registers 값을 읽어 각각 Digital과 Analog 모델 값으로 DB에 추가 한다.
 ## views.py
 ### index 합수
 ```python
