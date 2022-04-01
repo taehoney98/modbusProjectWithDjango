@@ -6,7 +6,7 @@ from EasyModbusPy.easymodbus.modbusClient import *
 
 modbus_client=ModbusClient('192.168.0.60',502)
 modbus_client.parity = Parity.even #짝수 패리티
-modbus_client.unitidentifier = 1
+modbus_client.unitidentifier = 1 #slave id 
 modbus_client.baudrate = 9600  #전송속도 보오 레이트
 modbus_client.stopbits = Stopbits.one #정지 비트  데이터 송출 종료 알림
 
@@ -27,7 +27,6 @@ print(Analog.objects.values_list('id','register_value'))
 print(Digital.objects.values_list('id','coil_value'))    
 
 def index(request):
-    
     coils = modbus_client.read_coils(0, 10)
     indexCoils = dict(enumerate(coils))
 
@@ -36,7 +35,7 @@ def index(request):
     
     discrete_inputs = modbus_client.read_discreteinputs(0, 10)	
     input_registers = modbus_client.read_inputregisters(0, 10)  
-
+    
     context={'coils': indexCoils ,'registers': indexRegisters,'discrete_inputs': discrete_inputs,'input_register': input_registers }
     return render(request,'modbus/list.html',context)
 
