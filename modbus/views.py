@@ -2,6 +2,11 @@ from django.shortcuts import  render
 from modbus.models import Digital
 from modbus.models import Analog
 from EasyModbusPy.easymodbus.modbusClient import *
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import DigitalSerializer
+from .serializers import AnalogSerializer
 # Create your views here.
 
 modbus_client=ModbusClient('192.168.0.60',502)
@@ -62,7 +67,7 @@ def writeCoil(request,index):
 def writeRegister(request, register_index, register_value):
     
     if request.method == 'POST':
-        register_value=request.POST.get('number')    
+        register_value=request.POST.get('number')
         modbus_client.write_single_register(register_index,  int(register_value))
         
         item= Analog.objects.get(id=register_index)
@@ -76,3 +81,93 @@ def writeRegister(request, register_index, register_value):
     context= {'register_index': register_index, 'register_value': register_value }
     
     return render(request,'modbus/register.html', context)
+
+class DigitalRestAPI(APIView):
+    
+    def get(self, request, **kwargs):
+        if (kwargs.get('id') is None):
+            queryset= Digital.objects.all()
+            print("queryset in digital api :" , queryset)
+            serializer = DigitalSerializer(queryset,many = True)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        else:
+            digital_id=kwargs.get('id')
+            serializer=DigitalSerializer(Digital.objects.get(id=digital_id))
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = DigitalSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    def put(self, request, **kwargs):
+        if kwargs.get('id') is None:
+            return Response("put kwargs(id) not exist. ", status=status.HTTP_400_BAD_REQUEST)
+        else:
+            digital_id = kwargs.get('id')
+            print("user_id is :", digital_id)
+            digital_object = Digital.objects.get(id=digital_id)
+            changed_serializer = DigitalSerializer(digital_object, data=request.data)
+            if changed_serializer.is_valid():
+                changed_serializer.save()
+                return Response(changed_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response("changed_serializer not exist. ", status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, **kwargs):
+        if kwargs.get('id') is None:
+            return Response("delete kwargs(id) not exist. ", status=status.HTTP_400_BAD_REQUEST)
+        else:
+            digital_id = kwargs.get('id')
+            digital_object = Digital.objects.get(id=digital_id)
+            digital_object.delete()
+            return Response("delete ok", status=status.HTTP_200_OK)
+        
+        
+class AnalogRestAPI(APIView):
+    def get(self, request, **kwargs):
+        if (kwargs.get('id') is None):
+            queryset= Analog.objects.all()
+            print("queryset in analog api :" , queryset)
+            serializer = AnalogSerializer(queryset,many = True)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        else:
+            analog_id=kwargs.get('id')
+            serializer=AnalogSerializer(Analog.objects.get(id=analog_id))
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = AnalogSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    def put(self, request, **kwargs):
+        if kwargs.get('id') is None:
+            return Response("put id does not exist. ", status=status.HTTP_400_BAD_REQUEST)
+        else:
+            analog_id = kwargs.get('id')
+            Analog_object = Analog.objects.get(id=analog_id)
+            changed_serializer = AnalogSerializer(Analog_object, data=request.data)
+            if changed_serializer.is_valid():
+                changed_serializer.save()
+                return Response(changed_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response("changed_serializer not exist. ", status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, **kwargs):
+        if kwargs.get('id') is None:
+            return Response("delete id does not exist. ", status=status.HTTP_400_BAD_REQUEST)
+        else:
+            analog_id = kwargs.get('id')
+            Analog_object = Analog.objects.get(id=analog_id)
+            Analog_object.delete()
+            return Response("delete ok", status=status.HTTP_200_OK)
+        
