@@ -1,12 +1,10 @@
 from django.shortcuts import  render
-from modbus.models import Digital
-from modbus.models import Analog
+from modbus.models import Digital ,  Analog
 from EasyModbusPy.easymodbus.modbusClient import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import DigitalSerializer
-from .serializers import AnalogSerializer
+from .serializers import DigitalSerializer ,  AnalogSerializer
 # Create your views here.
 
 modbus_client=ModbusClient('192.168.0.60',502)
@@ -109,7 +107,6 @@ class DigitalRestAPI(APIView):
             return Response("put kwargs(id) not exist. ", status=status.HTTP_400_BAD_REQUEST)
         else:
             digital_id = kwargs.get('id')
-            print("user_id is :", digital_id)
             digital_object = Digital.objects.get(id=digital_id)
             changed_serializer = DigitalSerializer(digital_object, data=request.data)
             if changed_serializer.is_valid():
