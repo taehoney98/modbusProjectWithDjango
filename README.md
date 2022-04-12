@@ -110,14 +110,15 @@ Analog Model의 해당 index 값을 register_value로 변경한다.
 ## urls.py 
 
 ```python 
-from django.urls import path
-from . import views
 
 urlpatterns = [
     path('',views.index , name='index'),    
     path('coil/<int:index>/',views.writeCoil,name='writeCoil'),
     path('register/<int:register_index>/<int:register_value>', views.writeRegister, name='writeRegister'),
-    
+    path('digitalapi/', DigitalRestAPI.as_view()),
+    path('digitalapi/<int:id>',DigitalRestAPI.as_view()) ,
+    path('analogapi/',AnalogRestAPI.as_view()),
+    path('analogapi/<int:id>',AnalogRestAPI.as_view()),
 ]
 
 ```
@@ -127,10 +128,7 @@ url.py의 path에서 해당하는 view.py 의 해당하는 함수 명으로 이�
 ## models.py
 
 ```python
-from django.db import models
-from EasyModbusPy.easymodbus.modbusClient import *
 
-# Create your models here.
 class Digital (models.Model):
     coil_value =models.BooleanField(default=False)
     
