@@ -1,6 +1,8 @@
 # modbusProjectWithDjango
-Django를 활용한 modbusTCP 실습
 
+![structureOfDjango](./structureOfDjango.png)
+
+Django를 활용한 modbusTCP 실습
 
 ## ModbusClient 연결 설정
 ```python
