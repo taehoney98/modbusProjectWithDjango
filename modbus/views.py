@@ -85,7 +85,6 @@ class DigitalRestAPI(APIView):
     def get(self, request, **kwargs):
         if (kwargs.get('id') is None):
             queryset= Digital.objects.all()
-            print("queryset in digital api :" , queryset)
             serializer = DigitalSerializer(queryset,many = True)
             return Response(serializer.data,status=status.HTTP_200_OK)
         else:
@@ -104,7 +103,7 @@ class DigitalRestAPI(APIView):
     
     def put(self, request, **kwargs):
         if kwargs.get('id') is None:
-            return Response("put kwargs(id) not exist. ", status=status.HTTP_400_BAD_REQUEST)
+            return Response("move to detail coil_id page ", status=status.HTTP_400_BAD_REQUEST)
         else:
             digital_id = kwargs.get('id')
             digital_object = Digital.objects.get(id=digital_id)
@@ -117,7 +116,7 @@ class DigitalRestAPI(APIView):
     
     def delete(self, request, **kwargs):
         if kwargs.get('id') is None:
-            return Response("delete kwargs(id) not exist. ", status=status.HTTP_400_BAD_REQUEST)
+            return Response("move to detail coil_id page ", status=status.HTTP_400_BAD_REQUEST)
         else:
             digital_id = kwargs.get('id')
             digital_object = Digital.objects.get(id=digital_id)
@@ -129,7 +128,6 @@ class AnalogRestAPI(APIView):
     def get(self, request, **kwargs):
         if (kwargs.get('id') is None):
             queryset= Analog.objects.all()
-            print("queryset in analog api :" , queryset)
             serializer = AnalogSerializer(queryset,many = True)
             return Response(serializer.data,status=status.HTTP_200_OK)
         else:
@@ -148,7 +146,7 @@ class AnalogRestAPI(APIView):
     
     def put(self, request, **kwargs):
         if kwargs.get('id') is None:
-            return Response("put id does not exist. ", status=status.HTTP_400_BAD_REQUEST)
+            return Response("move to detail register_id page ", status=status.HTTP_400_BAD_REQUEST)
         else:
             analog_id = kwargs.get('id')
             Analog_object = Analog.objects.get(id=analog_id)
@@ -161,10 +159,10 @@ class AnalogRestAPI(APIView):
     
     def delete(self, request, **kwargs):
         if kwargs.get('id') is None:
-            return Response("delete id does not exist. ", status=status.HTTP_400_BAD_REQUEST)
+            return Response("move to detail register_id page", status=status.HTTP_400_BAD_REQUEST)
         else:
             analog_id = kwargs.get('id')
             Analog_object = Analog.objects.get(id=analog_id)
             Analog_object.delete()
-            return Response("delete ok", status=status.HTTP_200_OK)
+            return Response("register is deleted", status=status.HTTP_200_OK)
         
