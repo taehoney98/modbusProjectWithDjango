@@ -1,8 +1,14 @@
 # modbusProjectWithDjango
-
-![structureOfDjango](./structureOfDjango.png)
-
 Django를 활용한 modbusTCP 실습
+
+## Django의 작동 구조
+![structureOfDjango](./structureOfDjango.png)
+1. 클라이언트가 url을 입력해 인터넷을 통해 Django 서버에 접속한다.
+2. url request에 의해 urls.py가 url에 해당하는 view로 분배한다.
+3. 클라이언트의 요구사항에 맞춰 view가 동작한다.
+4. 해당사항이 데이터베이스 모델로 표현된다.
+5. 실제 DB내부에서 처리가 발생한다.
+6. 클라이언트의 요청에 맞춘 .html이 렌더링되어 인터넷 브라우저를 통해 전달 된다.
 
 ## ModbusClient 연결 설정
 ```python
