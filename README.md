@@ -122,7 +122,7 @@ urlpatterns = [
 ]
 
 ```
-url.py의 path에서 해당하는 view.py 의 해당하는 함수 명으로 이동한다.
+url.py의 path에서 해당하는 view.py의 매칭되는 함수로 이동한다.
 
 
 ## models.py
@@ -162,7 +162,7 @@ django rest framework를 이용해 rest API를 통해 데이터베이스 CRUD(cr
             return Response(serializer.data, status=status.HTTP_200_OK)
 
 ```
-coil_id를 인자로 받지 않으면 전체 queryset을 serialize하고, 인자로 받으면 특정 coil_id값의 query만 json형태로 표시한다.
+coil_id를 인자로 받지 않으면 전체 queryset을 response하고, 인자로 받으면 특정 coil_id값의 query만 json형태로 표시한다.
 
 ### post 함수 (CREATE)
 ```python
@@ -176,7 +176,7 @@ coil_id를 인자로 받지 않으면 전체 queryset을 serialize하고, 인자
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 ```
-requst.data를 인자로 받아 queryset에 추가한다
+request.data를 인자로 받아 id를 할당해 queryset에 추가한다
 
 ### put 함수 (UPDATE)
 ```python
