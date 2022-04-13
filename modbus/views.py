@@ -82,13 +82,13 @@ def writeRegister(request, register_index, register_value):
 
 class DigitalRestAPI(APIView):
     
-    def get(self, request, **kwargs):
-        if (kwargs.get('id') is None):
+    def get(self, request, **coil_id):
+        if (coil_id.get('id') is None):
             queryset= Digital.objects.all()
             serializer = DigitalSerializer(queryset,many = True)
             return Response(serializer.data,status=status.HTTP_200_OK)
         else:
-            digital_id=kwargs.get('id')
+            digital_id=coil_id.get('id')
             serializer=DigitalSerializer(Digital.objects.get(id=digital_id))
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -101,37 +101,38 @@ class DigitalRestAPI(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
-    def put(self, request, **kwargs):
-        if kwargs.get('id') is None:
+    def put(self, request, **coil_id):
+        if coil_id.get('id') is None:
             return Response("move to detail coil_id page ", status=status.HTTP_400_BAD_REQUEST)
         else:
-            digital_id = kwargs.get('id')
+            digital_id = coil_id.get('id')
             digital_object = Digital.objects.get(id=digital_id)
             changed_serializer = DigitalSerializer(digital_object, data=request.data)
+            modbus_client.write_single_coil(digital_id,request.data.get('coil_value'))
             if changed_serializer.is_valid():
                 changed_serializer.save()
                 return Response(changed_serializer.data, status=status.HTTP_200_OK)
             else:
                 return Response("changed_serializer not exist. ", status=status.HTTP_400_BAD_REQUEST)
     
-    def delete(self, request, **kwargs):
-        if kwargs.get('id') is None:
+    def delete(self, request, **coil_id):
+        if coil_id.get('id') is None:
             return Response("move to detail coil_id page ", status=status.HTTP_400_BAD_REQUEST)
         else:
-            digital_id = kwargs.get('id')
+            digital_id = coil_id.get('id')
             digital_object = Digital.objects.get(id=digital_id)
             digital_object.delete()
             return Response("delete ok", status=status.HTTP_200_OK)
         
         
 class AnalogRestAPI(APIView):
-    def get(self, request, **kwargs):
-        if (kwargs.get('id') is None):
+    def get(self, request, **register_id):
+        if (register_id.get('id') is None):
             queryset= Analog.objects.all()
             serializer = AnalogSerializer(queryset,many = True)
             return Response(serializer.data,status=status.HTTP_200_OK)
         else:
-            analog_id=kwargs.get('id')
+            analog_id=register_id.get('id')
             serializer=AnalogSerializer(Analog.objects.get(id=analog_id))
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -144,24 +145,25 @@ class AnalogRestAPI(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
-    def put(self, request, **kwargs):
-        if kwargs.get('id') is None:
+    def put(self, request, **register_id):
+        if register_id.get('id') is None:
             return Response("move to detail register_id page ", status=status.HTTP_400_BAD_REQUEST)
         else:
-            analog_id = kwargs.get('id')
+            analog_id = register_id.get('id')
             Analog_object = Analog.objects.get(id=analog_id)
             changed_serializer = AnalogSerializer(Analog_object, data=request.data)
+            modbus_client.write_single_register(analog_id,request.data.get('register_value'))
             if changed_serializer.is_valid():
                 changed_serializer.save()
                 return Response(changed_serializer.data, status=status.HTTP_200_OK)
             else:
                 return Response("changed_serializer not exist. ", status=status.HTTP_400_BAD_REQUEST)
     
-    def delete(self, request, **kwargs):
-        if kwargs.get('id') is None:
+    def delete(self, request, **register_id):
+        if register_id.get('id') is None:
             return Response("move to detail register_id page", status=status.HTTP_400_BAD_REQUEST)
         else:
-            analog_id = kwargs.get('id')
+            analog_id = register_id.get('id')
             Analog_object = Analog.objects.get(id=analog_id)
             Analog_object.delete()
             return Response("register is deleted", status=status.HTTP_200_OK)
