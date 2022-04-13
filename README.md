@@ -105,7 +105,7 @@ def writeRegister(request, register_index, register_value):
     return render(request,'modbus/register.html', context)
 
 ```
-list.html에서 전달받은 방식이 POST면, number에 해당하는 값을 register_value에 저장하고 write_single_register를 통해 변경한다.
+list.html에서 전달받은 방식이 POST면, number에 해당하는 값을 register_value에 저장하고 write_single_register를 통해 변경한다.  
 Analog Model의 해당 index 값을 register_value로 변경한다.
 ## urls.py 
 
@@ -144,3 +144,73 @@ class Analog (models.Model):
     
 ```
 boolean 값의 coil_value를 갖는 Digital 클래스와 integer 값의 register_value를 갖는 Analog 클래스가 존재한다. 
+
+## Django REST framework
+django rest framework를 이용해 rest API를 통해 데이터베이스 CRUD(create, Read, Update, Delete)를 구현한다.
+
+### get 함수 (READ)
+```python
+
+    def get(self, request, **coil_id):
+        if (coil_id.get('id') is None):
+            queryset= Digital.objects.all()
+            serializer = DigitalSerializer(queryset,many = True)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        else:
+            digital_id=coil_id.get('id')
+            serializer=DigitalSerializer(Digital.objects.get(id=digital_id))
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+```
+coil_id를 인자로 받지 않으면 전체 queryset을 serialize하고, 인자로 받으면 특정 coil_id값의 query만 json형태로 표시한다.
+
+### post 함수 (CREATE)
+```python
+    
+    def post(self, request):
+        serializer = DigitalSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+```
+requst.data를 인자로 받아 queryset에 추가한다
+
+### put 함수 (UPDATE)
+```python
+
+    def put(self, request, **coil_id):
+        if coil_id.get('id') is None:
+            return Response("move to detail coil_id page ", status=status.HTTP_400_BAD_REQUEST)
+        else:
+            digital_id = coil_id.get('id')
+            digital_object = Digital.objects.get(id=digital_id)
+            changed_serializer = DigitalSerializer(digital_object, data=request.data)
+            modbus_client.write_single_coil(digital_id,request.data.get('coil_value'))
+            if changed_serializer.is_valid():
+                changed_serializer.save()
+                return Response(changed_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response("changed_serializer not exist. ", status=status.HTTP_400_BAD_REQUEST)
+
+```
+id를 인자로 받지 않으면 id를 입력하는 페이지로 이동하라는 메세지를 띄운후 400 bad request를 보낸다.  
+id가 인자로 주어지는 url로 접속시 , 해당 id값의 value를 수정해 modbus_client에 write한다. 
+
+### delete 함수  (DELETE)
+```python
+
+    def delete(self, request, **coil_id):
+        if coil_id.get('id') is None:
+            return Response("move to detail coil_id page ", status=status.HTTP_400_BAD_REQUEST)
+        else:
+            digital_id = coil_id.get('id')
+            digital_object = Digital.objects.get(id=digital_id)
+            digital_object.delete()
+            return Response("delete ok", status=status.HTTP_200_OK)
+
+```
+id가 인자로 주어지지 않으면 지우고자 하는 id page로 이동하라는 메세지를 띄운 후 400 bad request를 보낸다.  
+id가 인자로 주어지는 url로 접속시, id에 해당하는 값을 queryset 에서 삭제한다.
