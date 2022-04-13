@@ -1,8 +1,14 @@
 # modbusProjectWithDjango
-
-![structureOfDjango](./structureOfDjango.png)
-
 Django를 활용한 modbusTCP 실습
+
+## Django의 작동 구조
+![structureOfDjango](./structureOfDjango.png)
+1. 클라이언트가 url을 입력해 인터넷을 통해 Django 서버에 접속한다.
+2. url request에 의해 urls.py가 url에 해당하는 view로 분배한다.
+3. 클라이언트의 요구사항에 맞춰 view가 동작한다.
+4. 해당사항이 데이터베이스 모델로 표현된다.
+5. 실제 DB내부에서 처리가 발생한다.
+6. 클라이언트의 요청에 맞춘 .html이 렌더링되어 인터넷 브라우저를 통해 전달 된다.
 
 ## ModbusClient 연결 설정
 ```python
@@ -104,14 +110,15 @@ Analog Model의 해당 index 값을 register_value로 변경한다.
 ## urls.py 
 
 ```python 
-from django.urls import path
-from . import views
 
 urlpatterns = [
     path('',views.index , name='index'),    
     path('coil/<int:index>/',views.writeCoil,name='writeCoil'),
     path('register/<int:register_index>/<int:register_value>', views.writeRegister, name='writeRegister'),
-    
+    path('digitalapi/', DigitalRestAPI.as_view()),
+    path('digitalapi/<int:id>',DigitalRestAPI.as_view()) ,
+    path('analogapi/',AnalogRestAPI.as_view()),
+    path('analogapi/<int:id>',AnalogRestAPI.as_view()),
 ]
 
 ```
@@ -121,10 +128,7 @@ url.py의 path에서 해당하는 view.py 의 해당하는 함수 명으로 이�
 ## models.py
 
 ```python
-from django.db import models
-from EasyModbusPy.easymodbus.modbusClient import *
 
-# Create your models here.
 class Digital (models.Model):
     coil_value =models.BooleanField(default=False)
     
