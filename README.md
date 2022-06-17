@@ -31,8 +31,6 @@ holding_registers=modbus_client.read_holdingregisters(0,10)
 for i in range (len(holding_registers)):
     Analog.objects.create(id=i,register_value=holding_registers[i])
 
-print(Analog.objects.values_list('id','register_value'))
-print(Digital.objects.values_list('id','coil_value'))    
 
 ```
 웹 페이지 작동시 해당 IP,Port번호로 설정 후 connect한 후, 초기 coils 값과 holding_registers 값을 읽어 각각 Digital과 Analog 모델 값으로 DB에 추가 한다.
