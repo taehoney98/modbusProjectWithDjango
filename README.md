@@ -144,7 +144,7 @@ class Analog (models.Model):
 boolean 값의 coil_value를 갖는 Digital 클래스와 integer 값의 register_value를 갖는 Analog 클래스가 존재한다. 
 
 ## Django REST framework
-django rest framework를 이용해 rest API를 통해 데이터베이스 CRUD(reate, Read, Update, Delete)를 구현한다.
+django rest framework를 이용해 rest API를 통해 데이터베이스 CRUD(Create, Read, Update, Delete)를 구현한다.
 
 ### get 함수 (READ)
 ```python
